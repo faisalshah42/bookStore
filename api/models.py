@@ -40,6 +40,9 @@ class BookDetails(models.Model):
     upvote                  = models.CharField(max_length=100)
     downvote                = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.view
+
 # Books
 # ------------------------------------------------
 class Books(models.Model):
@@ -54,9 +57,9 @@ class Books(models.Model):
     ranking                 = models.CharField(max_length=100)
     state                   = models.CharField(max_length=100)
     book_brief_info         = models.CharField(max_length=100)
-    genre_id                = models.ForeignKey(Genre, on_delete=models.CASCADE, default=1)
-    author_id               = models.ForeignKey(Author, on_delete=models.CASCADE, default=1)
-    book_details_id         = models.ForeignKey(BookDetails, on_delete=models.CASCADE, default=1)
+    genre                   = models.ForeignKey(Genre, on_delete=models.CASCADE, default=1)
+    author                  = models.ForeignKey(Author, on_delete=models.CASCADE, default=1)
+    book_details            = models.ForeignKey(BookDetails, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.book_name
@@ -66,8 +69,8 @@ class Books(models.Model):
 class Comments(models.Model):
 
     comment                 = models.CharField(max_length=500)
-    book_id                 = models.ForeignKey(Books, on_delete=models.CASCADE, default=1)
-    user_id                 = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    books                   = models.ForeignKey(Books, on_delete=models.CASCADE, default=1)
+    users                   = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     app_id                  = models.BigIntegerField
 
     def __str__(self):
@@ -77,7 +80,7 @@ class Comments(models.Model):
 # ------------------------------------------------
 class UserCollection(models.Model):
 
-    book_id                 = models.ForeignKey(Books, on_delete=models.CASCADE, default=1)
+    books                 = models.ForeignKey(Books, on_delete=models.CASCADE, default=1)
     logged_in_time          = models.TimeField(auto_now=True)
 
     def __str__(self):
@@ -87,8 +90,8 @@ class UserCollection(models.Model):
 # ------------------------------------------------
 class UserActivity(models.Model):
 
-    user_id                 = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    book_id                 = models.ForeignKey(Books, on_delete=models.CASCADE, default=1)
+    users                   = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    books                   = models.ForeignKey(Books, on_delete=models.CASCADE, default=1)
     logged_in_time          = models.TimeField(auto_now=True)
     date                    = models.DateField(auto_now=True)
     unlocked_chapter        = models.BooleanField
@@ -104,8 +107,8 @@ class UserProfile(models.Model):
     coins                   = models.IntegerField
     logged_date             = models.DateField(auto_now=True)
     user_profile            = models.DateField(auto_now=True)
-    user_id                 = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    user_activity_id        = models.ForeignKey(UserActivity, on_delete=models.CASCADE, default=1)
+    users                   = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    user_activity        = models.ForeignKey(UserActivity, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.user_name
