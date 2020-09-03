@@ -28,7 +28,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 # Books Detials
 # ------------------------------------------------
 class BookDetailsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = BookDetails
         fields = '__all__'
@@ -36,7 +35,9 @@ class BookDetailsSerializer(serializers.ModelSerializer):
 # Books
 # ------------------------------------------------
 class BooksSerializer(serializers.ModelSerializer):
-
+    genre = GenreSerializer(read_only=True)
+    author = AuthorSerializer(read_only=True)
+    book_details = BookDetailsSerializer(read_only=True)
     class Meta:
         model = Books
         fields = '__all__'

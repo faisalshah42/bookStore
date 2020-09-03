@@ -1,8 +1,21 @@
+from django.db.models import Q
+from rest_framework.filters import (
+    SearchFilter,
+    OrderingFilter
+)
+
+from rest_framework.pagination import (
+    PageNumberPagination,
+    LimitOffsetPagination,
+    )
+
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.viewsets import ModelViewSet
 from api.models import *
 from api.serializer import *
 
@@ -57,12 +70,11 @@ class AuthorView(APIView):
 
 # Books Detials
 # -----------------------------------------------
-class BookDetailsView(APIView):
+class BookDetailsView(RetrieveAPIView):
 
-    def get(self, request):
-        book_details_list = BookDetails.objects.all()
-        serialzer = BookDetailsSerializer(book_details_list, many=True)
-        return Response(serialzer.data)
+    queryset = BookDetails.objects.all()
+    serializer_class = BookDetailsSerializer
+    lookup_field = 'pk'
 
     def post(self, request):
         serialzer = BookDetailsSerializer(data=request.data)
@@ -73,19 +85,20 @@ class BookDetailsView(APIView):
 
 # Books        
 # ------------------------------------------------
-class BooksView(APIView):
+class BooksView(ListAPIView):
 
-    def get(self, request):
-        book_list = Books.objects.all()
-        serialzer = BooksSerializer(book_list, many=True)
-        return Response(serialzer.data)
+    queryset = Books.objects.all().order_by('id')
+    serializer_class = BooksSerializer
+    pagination_class = LimitOffsetPagination
+        
+# Books Search by Book Name || Author Name       
+# ------------------------------------------------
+class BooksSearchView(ListAPIView):
 
-    def post(self, request):
-        serialzer = BooksSerializer(data=request.data)
-        if serialzer.is_valid():
-            serialzer.save()
-            return JsonResponse(serialzer.data, status = status.HTTP_201_CREATED)
-        return JsonResponse(serialzer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Books.objects.all()
+    serializer_class = BooksSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ['book_name', 'author__author_name']
 
 # Comments       
 # ------------------------------------------------
